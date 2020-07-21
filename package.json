@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/bot.js",
+    "prod": "npm start",
     "dev": "nodemon --ignore node_modules/ -e ts --exec \"npm run build && npm start\""
   },
   "keywords": [],
@@ -13,9 +14,18 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^14.0.13",
-    "discord.js": "^12.2.0"
+    "@types/node-cron": "^2.0.3",
+    "@types/mongoose": "^5.7.32",
+    "axios": "^0.19.2",
+    "discord.js": "^12.2.0",
+    "mongoose": "^5.9.24",
+    "node-cron": "^2.0.3",
+    "dotenv": "^8.2.0",
+    "typescript": "^3.9.5",
+    "nodemon": "^2.0.4"
   },
   "devDependencies": {
+    "@types/mongoose": "^5.7.32",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.4",
     "typescript": "^3.9.5"

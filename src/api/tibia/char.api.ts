@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export class TibiaApi {
+export class CharApi {
   
     worldName: string;
     TIBIA_DATA_API_URL: string = 'https://api.tibiadata.com/v2/';
@@ -37,16 +37,6 @@ export class TibiaApi {
         return {
           char: characteres.filter((char: { name: string; }) => char.name === characterName)
         }
-      }
-    
-      public async getGuildInformation(guildUrl : string) {
-        const { data: { guild: { members } } } = await axios.get(`${this.TIBIA_DATA_API_URL}guild/${encodeURIComponent(guildUrl)}.json`);
-        const response: any[] = [];
-        members.forEach(({ characters } : any) => {
-          response.push(...characters);
-        });
-    
-        return response;
       }
 }
 

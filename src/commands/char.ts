@@ -1,108 +1,126 @@
-import { Message, Client } from 'discord.js';
+import { Message, Client, MessageEmbed } from 'discord.js';
 import { Command } from './command';
 import { TibiaApi } from '../api/tibiaApi';
 import { Level } from '../utils/level';
-import { type } from 'os';
+import { CharService } from '../services/charService';
 
 export class Char implements Command {
 
-    world = 'Antica';
+    world = 'Relembra';
     api : TibiaApi
     bot : Client
     lvlCalculator : Level
+    charService: CharService
 
     constructor(bot: Client){
         this.api = new TibiaApi(this.world);
+        this.charService = new CharService();
+
         this.bot = bot;
         this.lvlCalculator = new Level();
+    }
+
+    party = {
+        Knight: "Victor Entwickler",
+        Druid: "Souza da Cut",
+        Paladin: "Uhttred Ragnarsson",
+        Sorcerer: "Bielhound Vishur Domal"
     }
     
     execute(bot: Client) {
         bot.on("message", (message : Message) => {
             if(message.author.bot) return;
-            message.reply("char char char!");
+            message.channel.send("command default");
         });
     }
 
-    sendMsg(msg : Message){
-        msg.reply('teste');
+    async sendMsg(msg : Message){
+       
 
-        // this.getChar(msg);
-        this.getRankPt(msg);
+        // await this.updateCharactersParty();
+
+
+
+        var ek = await this.charService.getCharacter(this.party.Knight);
+        var ed = await this.charService.getCharacter(this.party.Druid);
+        var ms = await this.charService.getCharacter(this.party.Sorcerer);
+        var rp = await this.charService.getCharacter(this.party.Paladin);
+
+        var card = new MessageEmbed();
+
+        card.setColor('#d62828');
+        card.setAuthor('Tibia Data', 'https://i.imgur.com/LOH4eAn.png')
+        card.addField('Experiencia diária da Party', 'relembrinha tictac');
+        card.addField('Resultado Diário', '\u200B');
+        card.addFields(
+            { name: 'Nick', value: ek.name, inline: true },
+            { name: 'Level', value: ek.level, inline: true },
+            { name: 'Xp Gained', value: this.formatExp(ek.dailyExp), inline: true },
+        );
+        card.addFields(
+            { name: 'Nick', value: ed.name, inline: true },
+            { name: 'Level', value: ed.level, inline: true },
+            { name: 'Xp Gained', value: this.formatExp(ed.dailyExp), inline: true },
+        );
+        card.addFields(
+            { name: 'Nick', value: ms.name, inline: true },
+            { name: 'Level', value: ms.level, inline: true },
+            { name: 'Xp Gained', value: this.formatExp(ms.dailyExp), inline: true },
+        );
+        card.addFields(
+            { name: 'Nick', value: rp.name, inline: true },
+            { name: 'Level', value: rp.level, inline: true },
+            { name: 'Xp Gained', value: this.formatExp(rp.dailyExp), inline: true },
+        );
+        card.addField('\u200B', '\u200B');
+        card.setTimestamp();
+        card.setFooter('powered by TibiaData ( tibiadata.com )');
+
+
+        msg.channel.send("Os dados da sua pt foram atualizados com sucesso! :thumbsup:", card);
+
     }
 
-    async getChar(msg : Message){
+    async updateCharactersParty(){
 
-        const nome = msg.content.split(" ");
-
-        console.log(nome[1] + nome[2]);
-        const response =  await this.api.getCharacterInformation(nome[1] + ' ' + nome[2])  
-        .then((response) => {
-            console.log(response);
-            msg.reply(response.info.name);
-            msg.reply(response.info.level); 
-            msg.reply(response.info.world);
-
-            var exp = this.lvlCalculator.getExperienceByLevel(response.info.level);
-            msg.reply(exp);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-
-        console.log(response);
-    }
-
-    async getRankPt(msg : Message){
-
-        const party = {
-            Knight: "Victor Entwickler",
-            Druid: "Souza da Cut",
-            Paladin: "Uhttred Ragnarsson",
-            Sorcerer: "Bielhound Vishur Domal"
-        }
-        
-        const party2 = {
-            Knight: "Laharu",
-            Druid: "Mixsoul",
-            Paladin: "Daamiiano",
-            Sorcerer: "Dahlin"
-        }
-
-        await this.api.getHighscoreByChar(party2.Sorcerer, 'Sorcerer')
-            .then((response) => {
-                msg.reply(response.char[0].points);
-                msg.reply(response.char[0].name); 
+        await this.api.getHighscoreByChar(this.party.Sorcerer, 'Sorcerer')
+            .then( async (response) => {
+                this.charService.updateCharacters(response.char[0]);
             })
             .catch((error) => {
                 console.log(error);
             });
 
-        await this.api.getHighscoreByChar(party2.Knight, 'Knight')
+        await this.api.getHighscoreByChar(this.party.Knight, 'Knight')
             .then((response) => {
-                msg.reply(response.char[0].points);
-                msg.reply(response.char[0].name); 
+                this.charService.updateCharacters(response.char[0]);
             })
             .catch((error) => {
                 console.log(error);
             });
             
-        await this.api.getHighscoreByChar(party2.Druid, 'Druid')
+        await this.api.getHighscoreByChar(this.party.Druid, 'Druid')
             .then((response) => {
-                msg.reply(response.char[0].points);
-                msg.reply(response.char[0].name); 
+                this.charService.updateCharacters(response.char[0]);
             })
             .catch((error) => {
                 console.log(error);
             });
 
-        await this.api.getHighscoreByChar(party2.Paladin, 'Paladin')
+        await this.api.getHighscoreByChar(this.party.Paladin, 'Paladin')
             .then((response) => {
-                msg.reply(response.char[0].points);
-                msg.reply(response.char[0].name); 
+                this.charService.updateCharacters(response.char[0]); 
             })
             .catch((error) => {
                 console.log(error);
             });
     }
+
+    private formatExp(exp: any): string{
+        if(exp !== undefined){
+            return   exp > 0 ? ':green_circle: ' +  exp  : ':red_circle: ' +  exp
+        }
+        return '0';
+    }
+
 }

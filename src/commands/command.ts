@@ -1,5 +1,5 @@
 import { Client, Message } from "discord.js";
-import { Ping } from "./ping";
+import { Guild } from "./guild";
 import { Char } from "./char";
 
 export abstract class Command{
@@ -20,8 +20,8 @@ export class CommandFactory{
 
     public static Create(commandName : any, bot : Client) : Command{
         switch(commandName){
-            case 'ping':
-                return new Ping();
+            case 'guild':
+                return new Guild(bot);
             case 'char':
                 return new Char(bot);
             default:
