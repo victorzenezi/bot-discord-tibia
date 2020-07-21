@@ -1,10 +1,17 @@
 import cron from 'node-cron';
-import { Message } from 'discord.js';
+import { Message, Client} from 'discord.js';
+import { Xp } from '../commands/xp';
 
-export const startTask = (bot: Message) => {
+export const dailyTasks = (bot: Client, msg: Message) => {
+  
+    var xpdiaria = new Xp(bot)
 
-    cron.schedule("*/10 * * * * *", function() {
-        console.log("running a task every 10 second ");
-      });
+    cron.schedule("0 5 * * * *", function() {
+      msg.channel.send("Bom dia Tibianos, bora rushar! CHAMA CHAMA")
+    });
+
+    cron.schedule("0 5 * * * *", function() {
+      xpdiaria.sendMsg(msg);
+    });
 
 }

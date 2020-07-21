@@ -25,7 +25,11 @@ export class CharService {
                 if(res?.currentExp !== undefined){
                     experience = res?.currentExp;
                     await charSchema.update({name: char.name},
-                         {dailyExp: char.points - experience, level: char.level});
+                         {
+                            dailyExp: char.points - experience,
+                            level: char.level,
+                            currentExp: char.points
+                        });
                 }
             });
     }

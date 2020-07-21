@@ -3,8 +3,9 @@ import { Command } from './command';
 import { TibiaApi } from '../api/tibiaApi';
 import { Level } from '../utils/level';
 import { CharService } from '../services/charService';
+import { Char } from '../Models/char.model';
 
-export class Char implements Command {
+export class Xp implements Command {
 
     world = 'Relembra';
     api : TibiaApi
@@ -35,16 +36,15 @@ export class Char implements Command {
     }
 
     async sendMsg(msg : Message){
-       
 
         // await this.updateCharactersParty();
-
-
 
         var ek = await this.charService.getCharacter(this.party.Knight);
         var ed = await this.charService.getCharacter(this.party.Druid);
         var ms = await this.charService.getCharacter(this.party.Sorcerer);
         var rp = await this.charService.getCharacter(this.party.Paladin);
+
+        var bestOfTheDay = this.getBestDailyXp([ek, ed, ms, rp]);
 
         var card = new MessageEmbed();
 
@@ -52,6 +52,8 @@ export class Char implements Command {
         card.setAuthor('Tibia Data', 'https://i.imgur.com/LOH4eAn.png')
         card.addField('Experiencia diária da Party', 'relembrinha tictac');
         card.addField('Resultado Diário', '\u200B');
+        card.addField('MELHOR XP: ', bestOfTheDay.nick + " " + bestOfTheDay.xp + " xp");
+        card.addField('-----------------------------------------------------------', '\u200B');
         card.addFields(
             { name: 'Nick', value: ek.name, inline: true },
             { name: 'Level', value: ek.level, inline: true },
@@ -121,6 +123,24 @@ export class Char implements Command {
             return   exp > 0 ? ':green_circle: ' +  exp  : ':red_circle: ' +  exp
         }
         return '0';
+    }
+
+    private getBestDailyXp(chars: Char[]) : any{
+        var best = {
+            xp: 0,
+            nick: ''
+        }
+
+        chars.forEach(char => {
+            if(char.dailyExp !== undefined && char.name !== undefined)
+            {
+                if(char.dailyExp > best.xp)
+                    best.xp = char.dailyExp;
+                    best.nick = char.name
+            }
+        });
+
+        return best;
     }
 
 }

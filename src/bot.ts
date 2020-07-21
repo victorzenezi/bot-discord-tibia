@@ -7,6 +7,7 @@ import connect from './utils/Connections/Database/connect'
 config();
 
 const bot = new Client();
+
 bot.login(process.env.DISCORD_TOKEN);
 
 bot.on("ready", () => {
@@ -15,9 +16,6 @@ bot.on("ready", () => {
     const uri = process.env.CONNECTION_STRING;
 
     connect(uri as string);
-
-    // var service = new GuildService();
-    // service.setupGuild("Breaking Away");
 })
 
 bot.on("message", (message : Message) => {

@@ -1,6 +1,7 @@
 import { Client, Message } from "discord.js";
 import { Guild } from "./guild";
-import { Char } from "./char";
+import { Xp } from "./xp";
+import { Task } from "./task";
 
 export abstract class Command{
     public abstract execute(bot : Client) : any;
@@ -22,8 +23,10 @@ export class CommandFactory{
         switch(commandName){
             case 'guild':
                 return new Guild(bot);
-            case 'char':
-                return new Char(bot);
+            case 'xp':
+                return new Xp(bot);
+            case 'task':
+                return new Task(bot);
             default:
                 return new BasicCommannd();
         }
