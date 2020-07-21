@@ -37,7 +37,7 @@ export class Xp implements Command {
 
     async sendMsg(msg : Message){
 
-        // await this.updateCharactersParty();
+        await this.updateCharactersParty();
 
         var ek = await this.charService.getCharacter(this.party.Knight);
         var ed = await this.charService.getCharacter(this.party.Druid);
