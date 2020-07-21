@@ -13,7 +13,7 @@ export class BasicCommannd implements Command{
         throw new Error("Method not implemented.");
     }
     public sendMsg(msg: Message) {
-        msg.reply("Comando Inválido.");
+        
     }
 }
 
@@ -23,8 +23,6 @@ export class CommandFactory{
         switch(commandName){
             case 'guild':
                 return new Guild(bot);
-            case 'xp':
-                return new Xp(bot);
             case 'task':
                 return new Task(bot);
             default:
