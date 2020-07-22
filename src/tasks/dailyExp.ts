@@ -12,6 +12,6 @@ export const dailyTasks = (msg: Message) => {
     });
 
     cron.schedule("0 8 * * * ", function() {
-      xpdiaria.sendMsg(msg);
+      xpdiaria.execute();
     });
 }
