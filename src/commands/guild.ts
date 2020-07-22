@@ -1,4 +1,4 @@
-import { Message, Client, MessageEmbed } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 import { Command } from './command';
 import { GuildApi } from '../api/tibia/guild.api';
 
@@ -6,16 +6,16 @@ export class Guild implements Command {
 
     world = 'Relembra';
     guildApi : GuildApi
-    bot : Client
+    bot : Message
 
 
-    constructor(bot: Client){
-        this.bot = bot;
+    constructor(msg: Message){
+        this.bot = msg;
         this.guildApi = new GuildApi();
     }
 
-    public execute(bot: Client) {
-        throw new Error("Method not implemented.");
+    public execute() {
+
     }
 
     public async sendMsg(msg: Message) {

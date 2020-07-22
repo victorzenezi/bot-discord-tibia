@@ -1,47 +1,49 @@
 import { Message, Client, MessageEmbed } from 'discord.js';
 import { Command } from './command';
-import { TibiaApi } from '../api/tibiaApi';
 import { Level } from '../utils/level';
 import { CharService } from '../services/charService';
 import { Char } from '../Models/char.model';
+import { CharApi } from '../api/tibia/char.api';
 
 export class Xp implements Command {
 
     world = 'Relembra';
-    api : TibiaApi
-    bot : Client
+    api : CharApi
+    msg : Message
     lvlCalculator : Level
     charService: CharService
 
-    constructor(bot: Client){
-        this.api = new TibiaApi(this.world);
+    constructor(msg: Message){
+        this.api = new CharApi(this.world);
         this.charService = new CharService();
+        this.msg = msg;
 
-        this.bot = bot;
         this.lvlCalculator = new Level();
     }
 
     party = {
         Knight: "Victor Entwickler",
+        Knight2: "Pila rush eazy",
         Druid: "Souza da Cut",
+        Druid2: "Nattanziik Masres Dobem",
         Paladin: "Uhttred Ragnarsson",
-        Sorcerer: "Bielhound Vishur Domal"
+        Sorcerer: "Bielhound Vishur Domal",
+        Sorcerer2: "Maxkz"
     }
     
-    execute(bot: Client) {
-        bot.on("message", (message : Message) => {
-            if(message.author.bot) return;
-            message.channel.send("command default");
-        });
+    async execute() {
+        await this.updateCharactersParty();
+        this.sendMsg(this.msg);
     }
 
-    async sendMsg(msg : Message){
-
-        await this.updateCharactersParty();
+    async sendMsg(msg: Message){
 
         var ek = await this.charService.getCharacter(this.party.Knight);
+        var ek2 = await this.charService.getCharacter(this.party.Knight2);
         var ed = await this.charService.getCharacter(this.party.Druid);
+        var ed2 = await this.charService.getCharacter(this.party.Druid2);
         var ms = await this.charService.getCharacter(this.party.Sorcerer);
+        var ms2 = await this.charService.getCharacter(this.party.Sorcerer2);
         var rp = await this.charService.getCharacter(this.party.Paladin);
 
         var bestOfTheDay = this.getBestDailyXp([ek, ed, ms, rp]);
@@ -60,14 +62,29 @@ export class Xp implements Command {
             { name: 'Xp Gained', value: this.formatExp(ek.dailyExp), inline: true },
         );
         card.addFields(
+            { name: 'Nick', value: ek2.name, inline: true },
+            { name: 'Level', value: ek2.level, inline: true },
+            { name: 'Xp Gained', value: this.formatExp(ek2.dailyExp), inline: true },
+        );
+        card.addFields(
             { name: 'Nick', value: ed.name, inline: true },
             { name: 'Level', value: ed.level, inline: true },
             { name: 'Xp Gained', value: this.formatExp(ed.dailyExp), inline: true },
         );
         card.addFields(
+            { name: 'Nick', value: ed2.name, inline: true },
+            { name: 'Level', value: ed2.level, inline: true },
+            { name: 'Xp Gained', value: this.formatExp(ed2.dailyExp), inline: true },
+        );
+        card.addFields(
             { name: 'Nick', value: ms.name, inline: true },
             { name: 'Level', value: ms.level, inline: true },
             { name: 'Xp Gained', value: this.formatExp(ms.dailyExp), inline: true },
+        );
+        card.addFields(
+            { name: 'Nick', value: ms2.name, inline: true },
+            { name: 'Level', value: ms2.level, inline: true },
+            { name: 'Xp Gained', value: this.formatExp(ms2.dailyExp), inline: true },
         );
         card.addFields(
             { name: 'Nick', value: rp.name, inline: true },
@@ -78,14 +95,20 @@ export class Xp implements Command {
         card.setTimestamp();
         card.setFooter('powered by TibiaData ( tibiadata.com )');
 
-
         msg.channel.send("Os dados da sua pt foram atualizados com sucesso! :thumbsup:", card);
-
     }
 
     async updateCharactersParty(){
 
         await this.api.getHighscoreByChar(this.party.Sorcerer, 'Sorcerer')
+                      .then( async (response) => {
+                this.charService.updateCharacters(response.char[0]);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        await this.api.getHighscoreByChar(this.party.Sorcerer2, 'Sorcerer')
             .then( async (response) => {
                 this.charService.updateCharacters(response.char[0]);
             })
@@ -100,8 +123,24 @@ export class Xp implements Command {
             .catch((error) => {
                 console.log(error);
             });
+
+        await this.api.getHighscoreByChar(this.party.Knight2, 'Knight')
+            .then((response) => {
+                this.charService.updateCharacters(response.char[0]);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
             
         await this.api.getHighscoreByChar(this.party.Druid, 'Druid')
+            .then((response) => {
+                this.charService.updateCharacters(response.char[0]);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        await this.api.getHighscoreByChar(this.party.Druid2, 'Druid')
             .then((response) => {
                 this.charService.updateCharacters(response.char[0]);
             })
@@ -118,7 +157,7 @@ export class Xp implements Command {
             });
     }
 
-    private formatExp(exp: any): string{
+    private formatExp(exp: any) : string{
         if(exp !== undefined){
             return   exp > 0 ? ':green_circle: ' +  exp  : ':red_circle: ' +  exp
         }
@@ -134,9 +173,10 @@ export class Xp implements Command {
         chars.forEach(char => {
             if(char.dailyExp !== undefined && char.name !== undefined)
             {
-                if(char.dailyExp > best.xp)
+                if(char.dailyExp > best.xp){
                     best.xp = char.dailyExp;
                     best.nick = char.name
+                }
             }
         });
 

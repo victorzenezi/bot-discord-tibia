@@ -23,7 +23,7 @@ bot.on("message", (message : Message) => {
     
     const args = message.content.slice(prefix.length).split(/ +/);
     const cmd = args.shift();
-    const command = CommandFactory.Create(cmd, bot);
+    const command = CommandFactory.Create(cmd, message);
 
     if(typeof(command) !== typeof(BasicCommannd))
         command.sendMsg(message);

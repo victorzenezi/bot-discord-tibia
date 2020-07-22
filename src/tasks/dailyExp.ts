@@ -2,16 +2,16 @@ import cron from 'node-cron';
 import { Message, Client} from 'discord.js';
 import { Xp } from '../commands/xp';
 
-export const dailyTasks = (bot: Client, msg: Message) => {
+export const dailyTasks = (msg: Message) => {
   
-    var xpdiaria = new Xp(bot)
+    var xpdiaria = new Xp(msg)
+    console.log("As tasks foram iniciadas.");
 
-    cron.schedule("0 5 * * * *", function() {
+    cron.schedule("0 8 * * * ", function() {
       msg.channel.send("Bom dia Tibianos, bora rushar! CHAMA CHAMA")
     });
 
-    cron.schedule("0 5 * * * *", function() {
+    cron.schedule("0 8 * * * ", function() {
       xpdiaria.sendMsg(msg);
     });
-
 }
