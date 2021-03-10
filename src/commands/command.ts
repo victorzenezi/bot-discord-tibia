@@ -25,7 +25,7 @@ export class CommandFactory{
                 return new Guild(msg);
             case 'task':
                 return new Task(msg);
-            case 'xp':
+            case 'experiencia':
                 return new Xp(msg);
             default:
                 return new BasicCommannd();
