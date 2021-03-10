@@ -21,7 +21,7 @@ export class CommandFactory{
 
     public static Create(commandName : any, msg : Message) : Command{
         switch(commandName){
-            case 'guild':
+            case 'grupo':
                 return new Guild(msg);
             case 'task':
                 return new Task(msg);
